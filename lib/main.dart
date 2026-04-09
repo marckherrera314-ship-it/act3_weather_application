@@ -87,7 +87,7 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
     setState(() => isLoading = false);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
-a
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
