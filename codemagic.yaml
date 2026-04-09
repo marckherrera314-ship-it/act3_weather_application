@@ -1,3 +1,4 @@
+# codemagic.yaml
 workflows:
   ios-workflow:
     name: iOS IPA Build
@@ -9,17 +10,21 @@ workflows:
       groups:
         - app_store_credentials
       vars:
+        BUNDLE_ID: "com.example.act3WeatherApplication"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        # UPDATE THESE TWO LINES
-        BUNDLE_ID: "com.example.act3WeatherApplication"
-        APP_ID: 1234567890
     scripts:
       - name: Set up code signing
         script: |
           keychain initialize
-          # FIXED: 'DISTRIBUTION' is now 'IOS_APP_STORE'
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --platform IOS --type IOS_APP_STORE --create
+          # Fetching files using the variables stored in your Codemagic UI
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
+            --key-id $APP_STORE_CONNECT_KEY_IDENTIFIER \
+            --private-key $APP_STORE_CONNECT_PRIVATE_KEY \
+            --platform IOS \
+            --type IOS_APP_STORE \
+            --create
           keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: |
