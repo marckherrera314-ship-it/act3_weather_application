@@ -1,0 +1,40 @@
+# codemagic.yaml
+workflows:
+  ios-workflow:
+    name: iOS IPA Build
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      groups:
+        - app_store_credentials # Create this in Codemagic UI (Teams > App Store Connect)
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        APP_ID: 1234567890 # Replace with your Apple App ID
+        BUNDLE_ID: "com.example.act3WeatherApplication" # Replace with your Bundle ID
+    scripts:
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          # This automatically fetches your certificates and profiles from Apple
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --platform IOS --type DISTRIBUTION --create
+          keychain add-certificates
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install Pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter build ipa
+        script: |
+          # Building the IPA for distribution
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com # Replace with your email
