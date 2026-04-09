@@ -1,21 +1,20 @@
 workflows:
   ios-workflow:
-    name: iOS IPA Build
+    name: iOS Build
     instance_type: mac_mini_m1
     max_build_duration: 60
     environment:
       flutter: stable
       xcode: latest
-      vars:
-        BUNDLE_ID: "com.example.act3WeatherApplication"
     scripts:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Build iOS IPA
+      - name: Build iOS
         script: |
-          # We use --no-codesign so the build succeeds even without Apple Certificates
-          # You can change this to your distribution command once signing is set up
-          flutter build ipa --release --no-codesign
+          # Use --debug or --release. Debug is often better for testing.
+          flutter build ios --debug --no-codesign
     artifacts:
+      - build/ios/iphoneos/*.app
       - build/ios/ipa/*.ipa
+      - '*.log'
