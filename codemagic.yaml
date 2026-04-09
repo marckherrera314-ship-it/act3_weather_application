@@ -8,31 +8,29 @@ workflows:
       flutter: stable
       xcode: latest
       groups:
-        - app_store_credentials # Ensure variables are in this group
+        - app_store_credentials
       vars:
-        BUNDLE_ID: "com.example.act3WeatherApplication" # Update this to your ID
+        BUNDLE_ID: "com.example.act3WeatherApplication"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
     scripts:
       - name: Set up code signing
         script: |
           keychain initialize
-          # This command handles certificates uploaded to the Codemagic UI
           xcode-project use-profiles
       - name: Get Flutter packages
         script: |
           flutter packages pub get
       - name: Install Pods
         script: |
-          cd ios && pod install
+          # This ensures we are in the right folder and the iOS project is ready
+          cd ios
+          rm -rf Pods
+          rm -rf Podfile.lock
+          pod install --repo-update
       - name: Flutter build ipa
         script: |
-          # The use-profiles command automatically generates the export_options.plist
           flutter build ipa --release \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
-    publishing:
-      email:
-        recipients:
-          - your-email@example.com
