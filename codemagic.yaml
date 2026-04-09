@@ -1,4 +1,3 @@
-# codemagic.yaml
 workflows:
   ios-workflow:
     name: iOS IPA Build
@@ -8,20 +7,20 @@ workflows:
       flutter: stable
       xcode: latest
       groups:
-        - app_store_credentials
+        - app_store_credentials # MUST match the group in Codemagic UI
       vars:
-        BUNDLE_ID: "com.example.act3WeatherApplication"
+        BUNDLE_ID: "com.example.act3WeatherApplication" # Update this
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
     scripts:
       - name: Set up code signing
         script: |
           keychain initialize
-          # Fetching files using the variables stored in your Codemagic UI
+          # We use quotes around variables to prevent the "expected one argument" error
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
-            --key-id $APP_STORE_CONNECT_KEY_IDENTIFIER \
-            --private-key $APP_STORE_CONNECT_PRIVATE_KEY \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
             --platform IOS \
             --type IOS_APP_STORE \
             --create
