@@ -1,6 +1,7 @@
+# codemagic.yaml
 workflows:
   ios-workflow:
-    name: iOS Build
+    name: iOS Sideload Build
     instance_type: mac_mini_m1
     max_build_duration: 60
     environment:
@@ -10,11 +11,11 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Build iOS
+      - name: Build iOS IPA
         script: |
-          # Use --debug or --release. Debug is often better for testing.
-          flutter build ios --debug --no-codesign
+          # The --no-codesign flag prevents the need for an Apple Developer Account
+          # It will generate an unsigned IPA in the build folder
+          flutter build ipa --release --no-codesign
     artifacts:
-      - build/ios/iphoneos/*.app
       - build/ios/ipa/*.ipa
-      - '*.log'
+      - build/ios/iphoneos/*.app
