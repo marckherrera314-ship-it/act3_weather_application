@@ -1,3 +1,22 @@
+# This line helps the Mac find the Flutter SDK
+fbp = File.expand_path(File.join('..', '..', '.flutter-plugins-dependencies'), __dir__)
+
+# The standard Flutter setup
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __dir__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get has executed"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/\s*FLUTTER_ROOT\s*=\s*(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig and regenerate it"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'xcode_backend.dart'), flutter_root)
+
 platform :ios, '13.0'
 
 target 'Runner' do
