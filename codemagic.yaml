@@ -11,11 +11,16 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Build iOS IPA
+      - name: Build iOS
         script: |
-          # The --no-codesign flag prevents the need for an Apple Developer Account
-          # It will generate an unsigned IPA in the build folder
-          flutter build ipa --release --no-codesign
+          # Build the compiled app bundle
+          flutter build ios --release --no-codesign
+      - name: Package for Sideloadly
+        script: |
+          # This creates the IPA structure manually
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r WeatherApp_Sideload.ipa Payload
     artifacts:
-      - build/ios/ipa/*.ipa
+      - "*.ipa"
       - build/ios/iphoneos/*.app
