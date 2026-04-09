@@ -1,4 +1,3 @@
-# codemagic.yaml
 workflows:
   ios-workflow:
     name: iOS IPA Build
@@ -7,30 +6,16 @@ workflows:
     environment:
       flutter: stable
       xcode: latest
-      groups:
-        - app_store_credentials
       vars:
         BUNDLE_ID: "com.example.act3WeatherApplication"
-        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
     scripts:
-      - name: Set up code signing
-        script: |
-          keychain initialize
-          xcode-project use-profiles
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Install Pods
+      - name: Build iOS IPA
         script: |
-          # This ensures we are in the right folder and the iOS project is ready
-          cd ios
-          rm -rf Pods
-          rm -rf Podfile.lock
-          pod install --repo-update
-      - name: Flutter build ipa
-        script: |
-          flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist
+          # We use --no-codesign so the build succeeds even without Apple Certificates
+          # You can change this to your distribution command once signing is set up
+          flutter build ipa --release --no-codesign
     artifacts:
       - build/ios/ipa/*.ipa
